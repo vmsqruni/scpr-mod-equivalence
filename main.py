@@ -55,7 +55,7 @@ class ScprForceCalculator(ForceCalculator):
 
     def ly(self):
         dphi = self.lphi()
-        return self.r * dphi
+        return self.r * math.radians(dphi)
 
     def lphi(self):
         dphi = math.radians(self.node2.getPhi() - self.node1.getPhi())
@@ -67,7 +67,7 @@ class ScprForceCalculator(ForceCalculator):
         else:
             dphi += 2 * math.pi
         
-        return dphi
+        return round(math.degrees(dphi) % 360)
 
     def calculate(self):
         return super().calculate()
@@ -107,13 +107,13 @@ class ModuloForceCalculator(ForceCalculator):
     
     def ly(self):
         dphi = self.lphi()
-        return self.r * dphi
+        return self.r * math.radians(dphi)
 
     def lphi(self):
         phi1 = self.node1.getPhi()
         phi2 = self.node2.getPhi()
-        dphi = math.radians(phi2 - phi1)
-        return (dphi) % (2 * math.pi)
+        dphi = math.radians(phi2 - phi1) % (2 * math.pi)
+        return round(math.degrees(dphi) % 360)
 
     def calculate(self):
         return super().calculate()
@@ -126,8 +126,8 @@ class ModuloForceCalculator(ForceCalculator):
 if __name__ == "__main__":
     print("Entered Python App!")
 
-    node1 = Node(2, 8, 45)
-    node2 = Node(8, 2, 80)
+    node1 = Node(2, 8, 40)
+    node2 = Node(8, 2, 240)
 
     mod = ModuloForceCalculator(node1, node2, 0.15, 0.4)
     scpr = ScprForceCalculator(node1, node2, 0.15, 0.4)
@@ -135,7 +135,25 @@ if __name__ == "__main__":
     mod_lx = mod.lx()
     scpr_lx = scpr.lx()
 
+    mod_ly = mod.ly()
+    scpr_ly = mod.ly()
+
     mod_lphi = mod.lphi()
     scpr_lphi = scpr.lphi()
+
+    mod_ltot = mod.calculate()
+    scpr_ltot = scpr.calculate()
+
+    print("\nMODULO CALCULATOR :\n")
+    print(f"Lx = {mod_lx} ")
+    print(f"Ly = {mod_ly}")
+    print(f"Lphi = {mod_lphi}")
+    print(f"Ltot = {mod_ltot}\n")
+
+    print("\nSCPR CALCULATOR :\n")
+    print(f"Lx = {scpr_lx} ")
+    print(f"Ly = {scpr_ly}")
+    print(f"Lphi = {scpr_lphi}")
+    print(f"Ltot = {scpr_ltot}\n")
 
     print("End of calculations")
