@@ -32,9 +32,9 @@ class ForceCalculator(ABC):
     def lphi(self):
         pass
 
-    @abstractmethod
     def calculate(self):
-        pass
+        """ Calculate Ftot """
+        return math.sqrt(math.pow(self.ly(), 2) + math.pow(self.lx(), 2))
     
     @abstractmethod
     def calculate_fnodes(self):
@@ -58,7 +58,7 @@ class ScprForceCalculator(ForceCalculator):
         return self.r * dphi
 
     def lphi(self):
-        dphi = self.node2.getPhi() - self.node1.getPhi()
+        dphi = math.radians(self.node2.getPhi() - self.node1.getPhi())
 
         if dphi < math.pi:
             pass
@@ -70,10 +70,8 @@ class ScprForceCalculator(ForceCalculator):
         return dphi
 
     def calculate(self):
-        """ Calculate Ftot """
-        ltot = math.sqrt(math.pow(self.ly(), 2) + math.pow(self.lx(), 2))
-        return ltot
-
+        return super().calculate()
+    
     def calculate_fnodes(self):
         """ Calculate Force on nodes """
         node_forces = [[0, 0], [0, 0]] # [Fnd1, Fnd2]
@@ -112,11 +110,13 @@ class ModuloForceCalculator(ForceCalculator):
         return self.r * dphi
 
     def lphi(self):
-        return (self.node2.getPhi() - self.node1.getPhi()) % (2 * math.pi)
-    
+        phi1 = self.node1.getPhi()
+        phi2 = self.node2.getPhi()
+        dphi = math.radians(phi2 - phi1)
+        return (dphi) % (2 * math.pi)
+
     def calculate(self):
-        """ Calculate Ftot """
-        return math.sqrt(math.pow(self.ly(), 2) + math.pow(self.lx(), 2))
+        return super().calculate()
     
     def calculate_fnodes(self):
         """ Calculate Force on nodes """
@@ -125,3 +125,17 @@ class ModuloForceCalculator(ForceCalculator):
 
 if __name__ == "__main__":
     print("Entered Python App!")
+
+    node1 = Node(2, 8, 45)
+    node2 = Node(8, 2, 80)
+
+    mod = ModuloForceCalculator(node1, node2, 0.15, 0.4)
+    scpr = ScprForceCalculator(node1, node2, 0.15, 0.4)
+
+    mod_lx = mod.lx()
+    scpr_lx = scpr.lx()
+
+    mod_lphi = mod.lphi()
+    scpr_lphi = scpr.lphi()
+
+    print("End of calculations")
